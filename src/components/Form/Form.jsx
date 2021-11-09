@@ -3,11 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import styles from "./Form.module.css";
 import { useState } from "react";
 
-export const Form = ({onSubmit}) => {
-    // state = {
-    //     name: "",
-    //     number: "",
-    // }
+const Form = ({onSubmit}) => {
 
     const [name, setName] = useState("");
     const [number, setNumber] = useState("");
@@ -20,7 +16,8 @@ export const Form = ({onSubmit}) => {
         break;
       case "number":
         setNumber(value);
-        break;
+            break;
+        default: return;
     }
   };
     
@@ -34,8 +31,8 @@ export const Form = ({onSubmit}) => {
 
         const contact = {
         id: uuidv4(),
-            ...name,
-        ...number,
+        name,
+        number,
         };
         
         onSubmit(contact);

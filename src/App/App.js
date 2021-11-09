@@ -1,56 +1,37 @@
 import Notiflix from "notiflix";
 import "./App.css";
 import styles from "../components/Form/Form.module.css";
-import React from "react";
 import Contact from "../components/Contact/Contact";
 import Form from "../components/Form/Form";
 import Filter from "../components/Filter/Filter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const App = () => {
-  const [contacts, setContacts] = useState(
-    JSON.parse(localStorage.getItem("contacts")) ?? []
-  );
+  const [contacts, setContacts] = useState(() => {
+    return JSON.parse(localStorage.getItem("contacts")) ?? [];
+  });
   const [filter, setFilter] = useState("");
-  const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
 
-  // const componentDidMount = () => {
-  //   const contactsJson = JSON.parse(localStorage.getItem("contacts"));
-  //   if (contactsJson) setContacts(contactsJson);
-  // };
+  useEffect(() => {
+    window.localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
 
-  // const componentDidUpdate = () => {
-  //   localStorage.setItem("contacts", JSON.stringify(contacts));
-  // };
-
-  const renderContact = ({ name, number, id }) => {
-    const item = {
-      id,
-      name,
-      number,
-    };
-
-    if (contacts.some((item) => item.name === name)) {
-      return Notiflix.Notify.warning(`${name} is already in contacts`);
-    } else if (contacts.some((item) => item.number === number)) {
-      return Notiflix.Notify.warning(`${number} is already in contacts`);
+  const renderContact = (contact) => {
+    if (contacts.some((item) => item.name.toLowerCase() === contact.name)) {
+      return Notiflix.Notify.warning(`${contact.name} is already in contacts`);
+    } else if (
+      contacts.some((item) => item.number.toLowerCase() === contact.number)
+    ) {
+      return Notiflix.Notify.warning(
+        `${contact.number} is already in contacts`
+      );
     } else {
-      setContacts({ item });
-      localStorage.setItem("contacts", JSON.stringify(contacts));
+      setContacts((prevState) => [...prevState, contact]);
     }
   };
 
   const handleInputChange = (event) => {
-    const { name, value } = event.currentTarget;
-    switch (name) {
-      case "name":
-        setName(value);
-        break;
-      case "number":
-        setNumber(value);
-        break;
-    }
+    setFilter(event.currentTarget.value);
   };
 
   const filteredContacts = () => {
